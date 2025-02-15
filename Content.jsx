@@ -1,13 +1,45 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import google_logo from "../assets/images/google.webp";
 import air_pots from "../assets/images/air pots.webp";
 import smart_phone from "../assets/images/smartPhone.webp";
 import game from "../assets/images/game.webp"
 
 
-const Content=()=>{
+function Content(){
+  
+  const [products,setProducts]=useState([])
+  const [loading,setLoading]=useState(true);
+  const [error, setError] = useState(null);
+  const [showForm,setShowForm]=useState(false);
+  
+
+  // Get all productList using Api 
+ useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("https://fakestoreapi.com/products"); // Fetching product list
+        if (!response.ok) throw new Error("Failed to fetch products");
+        const data = await response.json();
+        setProducts(data); // Update state with fetched data
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []); // Run only once on component mount
+  
+
+ 
+  if (loading) return <p className="text-center text-gray-600">Loading products...</p>;
+  if (error) return <p className="text-center text-red-500">Error: {error}</p>;
+
+  
   return (
      <>
+   
     <div className="container">
         <section class="nav-bar">
                  <div class="row">
@@ -33,7 +65,7 @@ const Content=()=>{
         </div>
        </div>
 </section>
-<section className="container-fluid">
+    <section className="container-fluid">
         <div className="row">
             <div className="col-1">
                  <span className="h5 text-start " >let's go shoping,Keerthana</span>
@@ -43,57 +75,74 @@ const Content=()=>{
                 </div>
         </div>
     </section>
+    <section className="productList">
+      <div className="p-5">
+      <h2 className="text-xl font-bold text-left">Product List</h2>
+      <div className="row">
+        {products.map((product) => (
+          <div key={product.id} className="col-md-4 col-sm-6 mb-4">
+            <div className="card h-100 shadow">
+              <img src={product.image} alt={product.title} className="card-img-top p-3" style={{ height: "200px", objectFit: "contain" }} />
+              <div className="card-body">
+                <h5 className="card-title">{product.title}</h5>
+                <p className="card-text text-muted">{product.category}</p>
+                <p className="card-text fw-bold text-success">${product.price}</p>
+                <a href="#" className="btn btn-primary w-100">View Product</a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+      </section>
+      <section className="productList">
+      <div className="p-5">
+      <h2 className="text-xl font-bold text-left">Electronics</h2>
+      <div className="row">
+        {products.map((product) => (
+          <div key={product.id} className="col-md-4 col-sm-6 mb-4">
+            <div className="card h-100 shadow">
+              <img src={product.image} alt={product.title} className="card-img-top p-3" style={{ height: "200px", objectFit: "contain" }} />
+              <div className="card-body">
+                <h5 className="card-title">{product.title}</h5>
+                <p className="card-text text-muted">{product.category}</p>
+                <p className="card-text fw-bold text-success">${product.price}</p>
+                <a href="#" className="btn btn-primary w-100">View Product</a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+      </section>
 
-    <section className="electronics">
-        <div className="row">
-            <h4 className="h4">Electronics</h4>
-            <div className="container" style={{width:"100%"}}>
-                    <div className="row align-items-start">
-                      <div className="col">
-                        <div className="card border-light mb-3" style={{width:"12rem"}}>
-                            <img className="card-img-top" style={{width: "70px"}}  src= {air_pots} alt="Card image cap"/>
-                            <div className="card-body">
-                              <h5 className="card-title">₹59,999</h5>
-                              <p className="card-text">motorola razr 50</p>
-                            </div>
-                          </div>
-                      </div>
-                      <div className="col">
-                        <div className="card border-light mb-3" style={{width:"12rem"}}>
-                            <img className="card-img-top"  style={{width: "70px"}} src={smart_phone} alt="Card image cap"/>
-                            <div className="card-body">
-                              <h5 className="card-title">₹2,850.00</h5>
-                              
-                              <p className="card-text">Amazon Fire TV Stick 3rd Gen with ALEXA Voice Remote</p>
-                            </div>
-                          </div>
-                      </div>
-                       <div className="col">
-                        <div className="card border-light mb-3" style={{width:"12rem"}}>
-                            <img className="card-img-top" style={{width: "70px"}}  src={game} alt="Card image cap"/>
-                            <div className="card-body">
-                              <h5 className="card-title">₹119,999.00</h5>
-                              <p className="card-text">Samsung Galaxy S23 Ultra 5G (12GB RAM, 512GB, Green)</p>
-                            </div>
-                          </div>
-                      </div>
-                    <div className="col-2" >
-                        <div className="card border-light mb-3" style={{width:"12rem"}}>
-                            <img className="card-img-top" style={{width: "70px"}} src={smart_phone} alt="Card image cap"/>
-                            <div className="card-body">
-                              <h5 className="card-title">₹119,999.00</h5>
-                              <p className="card-text">Samsung Galaxy S23 Ultra 5G (12GB RAM, 512GB, Green)</p>
-                            </div>
-                          </div>
-                      </div> 
-                   
-                    
-                    </div>
-              
-            
-           </div>
+   
+    <section className="form"> {showForm && (
+        <div className="form-container">
+          <h2>Sign In</h2>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+            />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              required
+            />
+            <button type="submit">Submit</button>
+          </form>
         </div>
-    </section> 
+      )}</section>
+
+     
+   
+   
 
      </div>
    
